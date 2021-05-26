@@ -4,7 +4,7 @@ A small project to learn design patterns and refactoring at the Clean Coders Eve
 
 # Recommended Tools
 
-- Install chocolatey using [https://docs.chocolatey.org/en-us/choco/setup#install-with-powershell.exe]
+- Install chocolatey using https://docs.chocolatey.org/en-us/choco/setup#install-with-powershell.exe
 
 TLDR: PowerShell as admin and Enter the following:
 
