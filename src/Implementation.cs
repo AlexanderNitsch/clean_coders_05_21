@@ -19,7 +19,9 @@ class DialogMediator : IMediator
     private SearchComponent _searchComponent;
     private CountryComponent _countryComponent;
 
-    public DialogMediator(AgeComponent ageComponent, SearchComponent searchComponent, CountryComponent countryComponent)
+    private FraudDetectionComponent _fraudDetectionComponent;
+
+    public DialogMediator(AgeComponent ageComponent, SearchComponent searchComponent, CountryComponent countryComponent, FraudDetectionComponent fraudDetectionComponent)
     {
         this._ageComponent = ageComponent;
         this._ageComponent.SetMediator(this);
@@ -27,6 +29,8 @@ class DialogMediator : IMediator
         this._searchComponent.SetMediator(this);
         this._countryComponent = countryComponent;
         this._countryComponent.SetMediator(this);
+        this._fraudDetectionComponent = fraudDetectionComponent;
+        this._fraudDetectionComponent.SetMediator(this);
     } 
 
     public void Notify(object sender, string ev)
@@ -39,11 +43,19 @@ class DialogMediator : IMediator
                 var minHorrorMovieAge = this._countryComponent.getMinHorrorMovieAge();
 
                 this._searchComponent.setHorrorMovieFilter(age, minHorrorMovieAge);
+
+                this._fraudDetectionComponent.checkAgeForFraud(age, minHorrorMovieAge);
+                this._fraudDetectionComponent.checkForCyberAttack();
                 break;
             case "MovieSearched":
+                this._fraudDetectionComponent.checkForCyberAttack();
                 break;
         }
 
+        if (this._fraudDetectionComponent.isFraud){
+            System.Threading.Thread.Sleep(10000);
+            System.Environment.Exit(1);
+        }
     }
 
     public bool isMovieAvailable(string movieName)
@@ -160,3 +172,44 @@ enum Country
         Germany,
         Indonesia
     }
+
+class FraudDetectionComponent : BaseComponent
+{
+    private int? lastAge;
+    private int? lastMinAge;
+    private DateTime timeOfLastAccess = DateTime.MinValue;
+
+    public bool isFraud = false;
+
+    public void checkAgeForFraud(int age, int minAge)
+    {      
+        // If the person lowered their age below the threshold
+        if(lastAge < lastMinAge && age >= lastMinAge)
+        {
+            Console.WriteLine("This is a FRAUD! Sending out Email to the parents.");
+            this.isFraud = true;
+        }
+
+        // Person changed country to get access
+        if(minAge < lastMinAge && lastAge <= lastMinAge && lastAge >= minAge)
+        {
+            Console.WriteLine("This is a FRAUD! Sending out Email to the parents.");
+            this.isFraud = true;
+        }
+
+
+        lastAge = age;
+        lastMinAge = minAge;
+    }
+
+    public void checkForCyberAttack()
+    {
+        if ((DateTime.Now - timeOfLastAccess).TotalMilliseconds < 1500)
+        {
+            Console.WriteLine("Nobody is this fast. This is a Cyberattack! Calling the police.");
+            this.isFraud = true;
+        }
+        
+        timeOfLastAccess = DateTime.Now;
+    }
+}
