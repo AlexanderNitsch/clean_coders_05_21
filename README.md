@@ -1,6 +1,7 @@
 # Movie Searcher
 
-A small project to learn design patterns and refactoring at the Clean Coders Evening
+A small project to learn design patterns and refactoring at the Clean Coders Evening.
+Based on the examples of the Refactoring Guru (https://refactoring.guru/design-patterns/mediator)
 
 # Recommended Tools
 
