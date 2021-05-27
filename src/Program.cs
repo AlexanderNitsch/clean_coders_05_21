@@ -6,8 +6,9 @@ class Program
     {
         var ageComponent = new AgeComponent();
         var countryComponent = new CountryComponent();
-        var searchComponent = new SearchComponent(ageComponent, countryComponent);
-        var dialog = new Dialog(ageComponent, searchComponent, countryComponent);
+        var searchComponent = new SearchComponent();
+        
+        var dialog = new DialogMediator(ageComponent, searchComponent, countryComponent);
 
         while (true)
         {
